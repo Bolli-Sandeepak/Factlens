@@ -16,7 +16,7 @@
 
 ```bash
 # 1. Clone the repository
-git clone <your-github-repo-url>
+git clone https://github.com/Bolli-Sandeepak/Factlens.git
 cd factslens_
 
 # 2. Install dependencies
@@ -40,7 +40,7 @@ Open your web browser and navigate to:
 
 ## 2. Video Demo
 
-- **Demo Video Link**: `[Insert your Loom / Google Drive / YouTube link here]`
+- **Demo Video Link**: https://drive.google.com/file/d/1NOuMN78ZrlxJn7cc2Tuk5XmyqlLYf-_o/view?usp=sharing
 - **Duration**: Under 3 minutes
 
 ### Recommended 3-Minute Demo Walkthrough Flow:
