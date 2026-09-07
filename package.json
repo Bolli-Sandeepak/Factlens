@@ -1,0 +1,34 @@
+{
+  "name": "factlens",
+  "version": "1.0.0",
+  "description": "FactLens - Cross-Document Fact Knowledge Layer",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "test": "node test/test-pipeline.js"
+  },
+  "keywords": [
+    "fact-extraction",
+    "knowledge-layer",
+    "pdf-processing",
+    "corroboration",
+    "contradiction",
+    "nlp"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "multer": "^1.4.5-lts.1",
+    "pdf-parse": "^1.1.1",
+    "pdfjs-dist": "^3.11.174",
+    "sql.js": "^1.12.0"
+  },
+  "devDependencies": {
+    "pdfkit": "^0.20.2"
+  }
+}

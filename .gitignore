@@ -1,0 +1,20 @@
+# Dependencies
+node_modules/
+
+# Environment and sensitive keys
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+
+# Uploads and temporary data
+uploads/*
+!uploads/.gitkeep
+data/*
+!data/.gitkeep
+
+# Logs and OS files
+*.log
+.DS_Store
+Thumbs.db

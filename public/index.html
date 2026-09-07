@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FactLens — Cross-Document Fact Knowledge Layer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-container">
+    <!-- Top Navigation Header -->
+    <header class="app-header">
+      <div class="header-brand">
+        <div class="logo-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            <path d="M11 8v6M8 11h6"></path>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <h1>FactLens</h1>
+          <span class="brand-tag">Fact Knowledge Layer</span>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <div class="engine-badge" id="engineBadge">
+          <span class="pulse-dot"></span>
+          <span id="engineStatus">Deterministic Engine Active</span>
+        </div>
+        <button class="btn btn-secondary btn-sm" id="btnLoadDelhivery" title="Load the 3 official Delhivery starter PDFs">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          Load Delhivery Dataset
+        </button>
+        <button class="btn btn-secondary btn-sm" id="btnLoadMacro" title="Load India Macroeconomy validation PDFs">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>
+          Load India Macro Dataset
+        </button>
+        <button class="btn btn-danger-outline btn-sm" id="btnReset" title="Reset all data and clear database">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>
+          Reset
+        </button>
+      </div>
+    </header>
+
+    <!-- KPI Statistics Grid -->
+    <section class="stats-section">
+      <div class="stat-card">
+        <div class="stat-icon icon-blue">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+        </div>
+        <div class="stat-info">
+          <span class="stat-label">Documents Processed</span>
+          <span class="stat-value" id="statDocCount">0</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon icon-purple">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+        </div>
+        <div class="stat-info">
+          <span class="stat-label">Facts Extracted</span>
+          <span class="stat-value" id="statFactCount">0</span>
+        </div>
+      </div>
+
+      <div class="stat-card filter-trigger" data-filter="CORROBORATED">
+        <div class="stat-icon icon-green">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+        </div>
+        <div class="stat-info">
+          <span class="stat-label">Corroborated</span>
+          <span class="stat-value text-green" id="statCorroborated">0</span>
+        </div>
+      </div>
+
+      <div class="stat-card filter-trigger" data-filter="CONTRADICTION">
+        <div class="stat-icon icon-red">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+        </div>
+        <div class="stat-info">
+          <span class="stat-label">Contradictions</span>
+          <span class="stat-value text-red" id="statContradiction">0</span>
+        </div>
+      </div>
+
+      <div class="stat-card filter-trigger" data-filter="CONTEXTUAL_DIFFERENCE">
+        <div class="stat-icon icon-amber">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+        </div>
+        <div class="stat-info">
+          <span class="stat-label">Contextual Differences</span>
+          <span class="stat-value text-amber" id="statContextual">0</span>
+        </div>
+      </div>
+
+      <div class="stat-card filter-trigger" data-filter="UNCERTAIN">
+        <div class="stat-icon icon-indigo">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+        </div>
+        <div class="stat-info">
+          <span class="stat-label">Uncertain Findings</span>
+          <span class="stat-value text-indigo" id="statUncertain">0</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Main Workspace Grid -->
+    <main class="main-layout">
+      <!-- Left Column: Upload & Ingested Document Bank -->
+      <aside class="sidebar">
+        <!-- PDF Upload Card -->
+        <div class="panel-card upload-card">
+          <div class="panel-header">
+            <h2>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+              Upload PDF Documents
+            </h2>
+          </div>
+          <div class="dropzone" id="dropZone">
+            <input type="file" id="fileInput" multiple accept=".pdf" class="file-input-hidden" />
+            <div class="dropzone-content">
+              <div class="dropzone-icon">
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
+              </div>
+              <p class="dropzone-title">Drag & drop PDF files here</p>
+              <p class="dropzone-sub">or <span class="browse-link">browse files</span> from your computer</p>
+              <span class="dropzone-hint">Supports multi-page PDFs, Financial Reports, Prospectuses</span>
+            </div>
+          </div>
+
+          <!-- Staged file list -->
+          <div class="staged-files" id="stagedFilesContainer" style="display: none;">
+            <div class="staged-header">
+              <span>Selected Files (<span id="stagedCount">0</span>)</span>
+              <button class="btn-text-sm" id="btnClearStaged">Clear</button>
+            </div>
+            <ul class="staged-list" id="stagedList"></ul>
+            <button class="btn btn-primary btn-block" id="btnUploadSubmit">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              Process & Extract Facts
+            </button>
+          </div>
+
+          <!-- Processing Progress State -->
+          <div class="processing-overlay" id="processingOverlay" style="display: none;">
+            <div class="spinner"></div>
+            <p class="processing-text" id="processingText">Ingesting PDF and extracting page-level facts...</p>
+            <div class="progress-bar-container">
+              <div class="progress-bar-fill" id="progressBar"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Ingested Documents List -->
+        <div class="panel-card doc-list-card">
+          <div class="panel-header">
+            <h2>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="9" x2="15" y2="9"></line><line x1="9" y1="13" x2="15" y2="13"></line><line x1="9" y1="17" x2="11" y2="17"></line></svg>
+              Knowledge Bank (<span id="docCountBadge">0</span>)
+            </h2>
+          </div>
+          <div class="doc-list" id="docListContainer">
+            <div class="empty-placeholder">
+              <p>No documents in knowledge layer.</p>
+              <p class="sub-hint">Upload PDFs or load the Starter Dataset above.</p>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Right Column: Cross-Document Findings & Fact Explorer -->
+      <section class="content-area">
+        <!-- Cross-Document Findings Matrix -->
+        <div class="panel-card findings-card">
+          <div class="panel-header flex-between">
+            <div class="header-left">
+              <h2>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7.5" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="23" y1="11" x2="17" y2="11"></line></svg>
+                Cross-Document Findings
+              </h2>
+              <span class="findings-count-pill" id="findingsCountPill">0 relationships</span>
+            </div>
+
+            <!-- Classification Filter Tabs -->
+            <div class="filter-tabs" id="classificationTabs">
+              <button class="tab-btn active" data-filter="ALL">All (<span id="tabCountAll">0</span>)</button>
+              <button class="tab-btn tab-green" data-filter="CORROBORATED">Corroborated (<span id="tabCountCorrob">0</span>)</button>
+              <button class="tab-btn tab-red" data-filter="CONTRADICTION">Contradiction (<span id="tabCountContra">0</span>)</button>
+              <button class="tab-btn tab-amber" data-filter="CONTEXTUAL_DIFFERENCE">Contextual Diff (<span id="tabCountContext">0</span>)</button>
+              <button class="tab-btn tab-indigo" data-filter="UNCERTAIN">Uncertain (<span id="tabCountUncert">0</span>)</button>
+            </div>
+          </div>
+
+          <!-- Findings Container -->
+          <div class="findings-list" id="findingsContainer">
+            <div class="empty-placeholder large">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+              <h3>No Cross-Document Relationships Yet</h3>
+              <p>Upload 2 or more PDF documents or click <strong>Load Delhivery Dataset</strong> to discover corroborated facts, contradictions, and contextual variances.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Atomic Fact Explorer -->
+        <div class="panel-card facts-explorer-card">
+          <div class="panel-header flex-between">
+            <h2>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon></svg>
+              Extracted Facts Explorer (<span id="factsTotalBadge">0</span>)
+            </h2>
+            <div class="table-search-box">
+              <input type="text" id="factSearchInput" placeholder="Search by entity, metric, value, or evidence..." />
+            </div>
+          </div>
+
+          <div class="table-wrapper">
+            <table class="facts-table">
+              <thead>
+                <tr>
+                  <th>Subject</th>
+                  <th>Metric / Predicate</th>
+                  <th>Value</th>
+                  <th>Period</th>
+                  <th>Scope</th>
+                  <th>Source Document</th>
+                  <th>Page</th>
+                  <th>Confidence</th>
+                  <th>Evidence</th>
+                </tr>
+              </thead>
+              <tbody id="factsTableBody">
+                <tr>
+                  <td colspan="9" class="text-center empty-cell">No facts extracted yet.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Side-by-Side Evidence Comparison Modal -->
+    <div class="modal-backdrop" id="evidenceModal" style="display: none;">
+      <div class="modal-dialog">
+        <div class="modal-header">
+          <div class="modal-title-wrap">
+            <span class="badge" id="modalClassBadge">CORROBORATED</span>
+            <span class="modal-subtitle" id="modalDiffType"></span>
+          </div>
+          <button class="modal-close-btn" id="modalCloseBtn">&times;</button>
+        </div>
+
+        <div class="modal-body">
+          <!-- Reasoning Banner -->
+          <div class="reasoning-box">
+            <div class="reasoning-header">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+              <h4>System Reasoning & Classification Grounding</h4>
+              <span class="modal-confidence-pill" id="modalConfidence">Confidence: 95%</span>
+            </div>
+            <p id="modalReasoningText"></p>
+          </div>
+
+          <!-- Side-by-Side Comparison Container -->
+          <div class="evidence-comparison-grid">
+            <!-- Fact A Panel -->
+            <div class="evidence-panel panel-left">
+              <div class="panel-header-doc">
+                <span class="doc-badge doc-a-badge">Document A</span>
+                <span class="doc-name" id="modalDocAName">document_a.pdf</span>
+                <span class="page-pill" id="modalDocAPage">Page 12</span>
+              </div>
+              <div class="fact-summary-row">
+                <div class="fact-meta-item">
+                  <span class="meta-lbl">Subject</span>
+                  <span class="meta-val" id="modalDocASubject">Acme Corp</span>
+                </div>
+                <div class="fact-meta-item">
+                  <span class="meta-lbl">Predicate</span>
+                  <span class="meta-val" id="modalDocAPredicate">revenue</span>
+                </div>
+                <div class="fact-meta-item">
+                  <span class="meta-lbl">Reported Value</span>
+                  <span class="meta-val highlight-val" id="modalDocAValue">$100M</span>
+                </div>
+                <div class="fact-meta-item">
+                  <span class="meta-lbl">Period / Scope</span>
+                  <span class="meta-val" id="modalDocAPeriodScope">FY2023 • Consolidated</span>
+                </div>
+              </div>
+              <div class="evidence-quote-box">
+                <span class="quote-lbl">Verbatim Source Evidence Quote</span>
+                <blockquote id="modalDocAQuote">"..."</blockquote>
+              </div>
+            </div>
+
+            <!-- Fact B Panel -->
+            <div class="evidence-panel panel-right">
+              <div class="panel-header-doc">
+                <span class="doc-badge doc-b-badge">Document B</span>
+                <span class="doc-name" id="modalDocBName">document_b.pdf</span>
+                <span class="page-pill" id="modalDocBPage">Page 7</span>
+              </div>
+              <div class="fact-summary-row">
+                <div class="fact-meta-item">
+                  <span class="meta-lbl">Subject</span>
+                  <span class="meta-val" id="modalDocBSubject">Acme Corp</span>
+                </div>
+                <div class="fact-meta-item">
+                  <span class="meta-lbl">Predicate</span>
+                  <span class="meta-val" id="modalDocBPredicate">revenue</span>
+                </div>
+                <div class="fact-meta-item">
+                  <span class="meta-lbl">Reported Value</span>
+                  <span class="meta-val highlight-val" id="modalDocBValue">100 million USD</span>
+                </div>
+                <div class="fact-meta-item">
+                  <span class="meta-lbl">Period / Scope</span>
+                  <span class="meta-val" id="modalDocBPeriodScope">FY2023 • Consolidated</span>
+                </div>
+              </div>
+              <div class="evidence-quote-box">
+                <span class="quote-lbl">Verbatim Source Evidence Quote</span>
+                <blockquote id="modalDocBQuote">"..."</blockquote>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Single Fact Evidence Modal -->
+    <div class="modal-backdrop" id="singleFactModal" style="display: none;">
+      <div class="modal-dialog modal-dialog-sm">
+        <div class="modal-header">
+          <div class="modal-title-wrap">
+            <span class="badge badge-indigo">Source Evidence</span>
+            <span class="modal-subtitle" id="singleFactDocTitle"></span>
+          </div>
+          <button class="modal-close-btn" id="singleFactCloseBtn">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="fact-summary-row">
+            <div class="fact-meta-item">
+              <span class="meta-lbl">Subject</span>
+              <span class="meta-val" id="sfSubject"></span>
+            </div>
+            <div class="fact-meta-item">
+              <span class="meta-lbl">Metric</span>
+              <span class="meta-val" id="sfPredicate"></span>
+            </div>
+            <div class="fact-meta-item">
+              <span class="meta-lbl">Value</span>
+              <span class="meta-val highlight-val" id="sfValue"></span>
+            </div>
+            <div class="fact-meta-item">
+              <span class="meta-lbl">Period</span>
+              <span class="meta-val" id="sfPeriod"></span>
+            </div>
+          </div>
+          <div class="evidence-quote-box mt-3">
+            <span class="quote-lbl">Extracted Evidence Excerpt (Page <span id="sfPageNum">1</span>)</span>
+            <blockquote id="sfEvidenceQuote"></blockquote>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
